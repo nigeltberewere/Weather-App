@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="url(#paint0_linear)"/>
+  <g filter="url(#filter0_d)">
+    <circle cx="256" cy="256" r="120" fill="#FFC107"/>
+  </g>
+  <path d="M368 288C368 332.183 332.183 368 288 368H176C131.817 368 96 332.183 96 288C96 243.817 131.817 208 176 208C182.009 208 187.848 208.662 193.468 209.916C206.342 179.069 236.791 160 272 160C319.44 160 359.455 193.96 366.696 239.07C367.13 239.025 367.564 239.003 368 239.003V288Z" fill="white"/>
+  <path d="M288 368H176C131.817 368 96 332.183 96 288C96 276.805 98.3013 266.152 102.454 256.5C108.264 295.258 139.704 325.707 178.462 331.517C188.114 335.67 198.767 337.971 209.962 337.971H321.962C333.157 337.971 343.81 335.67 353.462 331.517C362.767 317.575 368 301.183 368 283.5C368 265.817 362.767 249.425 353.462 235.483C362.564 250.145 368 268.096 368 288C368 332.183 332.183 368 288 368Z" fill="#E0E0E0"/>
+  <path d="M240 400C240 426.51 218.51 448 192 448C165.49 448 144 426.51 144 400C144 373.49 192 336 192 336C192 336 240 373.49 240 400Z" fill="#03A9F4"/>
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4FC3F7"/>
+      <stop offset="1" stop-color="#0288D1"/>
+    </linearGradient>
+    <filter id="filter0_d" x="132" y="132" width="248" height="248" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dx="4" dy="4"/>
+      <feGaussianBlur stdDeviation="4"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+  </defs>
+</svg>

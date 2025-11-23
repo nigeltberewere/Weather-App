@@ -1,0 +1,23 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    always_declare_return_types: true
+    avoid_empty_else: true
+    avoid_init_to_null: true
+    await_only_futures: true
+    prefer_final_fields: true
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    unawaited_futures: true
+
+analyzer:
+  errors:
+    missing_required_param: error
+    missing_return: error
+    deprecated_member_use: ignore
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
