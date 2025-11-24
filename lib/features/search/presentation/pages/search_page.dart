@@ -6,6 +6,7 @@ import 'package:weatherly/domain/entities/weather.dart';
 import 'package:weatherly/core/theme/app_colors.dart';
 import 'package:weatherly/core/widgets/weather_background.dart';
 import 'package:weatherly/core/localization/app_localizations.dart';
+import 'package:weatherly/features/favorites/presentation/pages/favorites_page.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   final String? currentCondition;
@@ -184,16 +185,42 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       );
     }
 
+    final favoritesAsync = ref.watch(favoritesProvider);
+    final favorites = favoritesAsync.value ?? [];
+
     return ListView.builder(
       itemCount: _searchResults!.length,
       itemBuilder: (context, index) {
         final location = _searchResults![index];
+        final isFavorite = favorites.any(
+          (fav) =>
+              fav.latitude == location.latitude &&
+              fav.longitude == location.longitude,
+        );
+
         return ListTile(
           leading: Icon(Icons.location_on, color: textColor),
           title: Text(location.name, style: TextStyle(color: textColor)),
           subtitle: Text(
             '${location.state ?? ''} ${location.country ?? ''}'.trim(),
             style: TextStyle(color: textColor.withOpacity(0.7)),
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.red : textColor.withOpacity(0.7),
+            ),
+            onPressed: () async {
+              final repository = ref.read(locationRepositoryProvider);
+              if (isFavorite) {
+                await repository.removeFavoriteLocation(location);
+              } else {
+                await repository.addFavoriteLocation(
+                  location.copyWith(isFavorite: true),
+                );
+              }
+              ref.invalidate(favoritesProvider);
+            },
           ),
           onTap: () {
             Navigator.pop(context, location);

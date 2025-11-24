@@ -7,23 +7,12 @@ import 'package:weatherly/core/widgets/app_icon.dart';
 final unitPreferenceProvider = NotifierProvider<UnitPreferenceNotifier, String>(
   UnitPreferenceNotifier.new,
 );
-final iconStylePreferenceProvider =
-    NotifierProvider<IconStylePreferenceNotifier, String>(
-      IconStylePreferenceNotifier.new,
-    );
 
 class UnitPreferenceNotifier extends Notifier<String> {
   @override
   String build() => 'metric';
 
   void set(String unit) => state = unit;
-}
-
-class IconStylePreferenceNotifier extends Notifier<String> {
-  @override
-  String build() => 'fill';
-
-  void set(String style) => state = style;
 }
 
 class SettingsPage extends ConsumerWidget {
@@ -34,7 +23,6 @@ class SettingsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final themeMode = ref.watch(themeModeProvider);
     final unitPreference = ref.watch(unitPreferenceProvider);
-    final iconStyle = ref.watch(iconStylePreferenceProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
@@ -49,15 +37,7 @@ class SettingsPage extends ConsumerWidget {
               _showThemeDialog(context, ref);
             },
           ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.image_outlined),
-            title: const Text('Icon Style'),
-            subtitle: Text(_getIconStyleLabel(iconStyle)),
-            onTap: () {
-              _showIconStyleDialog(context, ref);
-            },
-          ),
+
           const Divider(),
           ListTile(
             leading: const Icon(Icons.thermostat_outlined),
@@ -135,17 +115,6 @@ class SettingsPage extends ConsumerWidget {
         return 'Kelvin (K)';
       default:
         return 'Celsius (°C)';
-    }
-  }
-
-  String _getIconStyleLabel(String style) {
-    switch (style) {
-      case 'fill':
-        return 'Filled';
-      case 'line':
-        return 'Line';
-      default:
-        return 'Filled';
     }
   }
 
@@ -278,63 +247,6 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   onTap: () {
                     ref.read(unitPreferenceProvider.notifier).set('kelvin');
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  void _showIconStyleDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Choose Icon Style'),
-        content: StatefulBuilder(
-          builder: (context, setState) {
-            final currentStyle = ref.watch(iconStylePreferenceProvider);
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('Filled'),
-                  leading: Radio<String>(
-                    value: 'fill',
-                    groupValue: currentStyle,
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref
-                            .read(iconStylePreferenceProvider.notifier)
-                            .set(value);
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                  onTap: () {
-                    ref.read(iconStylePreferenceProvider.notifier).set('fill');
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('Line'),
-                  leading: Radio<String>(
-                    value: 'line',
-                    groupValue: currentStyle,
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref
-                            .read(iconStylePreferenceProvider.notifier)
-                            .set(value);
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                  onTap: () {
-                    ref.read(iconStylePreferenceProvider.notifier).set('line');
                     Navigator.pop(context);
                   },
                 ),
