@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weatherly/core/theme/app_colors.dart';
 import 'package:weatherly/core/utils/unit_converter.dart';
 import 'package:weatherly/core/widgets/weather_icon.dart';
+import 'package:weatherly/core/providers/settings_providers.dart';
 import 'package:weatherly/domain/entities/weather.dart';
-import 'package:weatherly/features/settings/presentation/pages/settings_page.dart';
 
 class CurrentWeatherCard extends ConsumerWidget {
   final Weather weather;
@@ -14,8 +14,16 @@ class CurrentWeatherCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final unit = ref.watch(unitPreferenceProvider);
+    final unitAsync = ref.watch(unitPreferenceProvider);
 
+    return unitAsync.when(
+      data: (unit) => _buildCard(context, theme, unit),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+    );
+  }
+
+  Widget _buildCard(BuildContext context, ThemeData theme, String unit) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

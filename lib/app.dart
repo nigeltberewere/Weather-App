@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weatherly/core/theme/app_theme.dart';
 import 'package:weatherly/features/home/presentation/pages/home_page.dart';
+import 'package:weatherly/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:weatherly/core/localization/app_localizations.dart';
 
 final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
@@ -20,6 +21,7 @@ class WeatherlyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final hasSeenOnboarding = ref.watch(hasSeenOnboardingProvider);
 
     return MaterialApp(
       title: 'Weatherly',
@@ -37,7 +39,13 @@ class WeatherlyApp extends ConsumerWidget {
         Locale('en'),
         Locale('es'),
       ],
-      home: const HomePage(),
+      home: hasSeenOnboarding.when(
+        data: (completed) => completed ? const HomePage() : const OnboardingPage(),
+        loading: () => const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+        error: (_, __) => const HomePage(), // Fallback to home if error
+      ),
     );
   }
 }

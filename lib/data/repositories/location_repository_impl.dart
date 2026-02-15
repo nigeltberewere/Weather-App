@@ -11,10 +11,16 @@ import 'package:weatherly/domain/repositories/location_repository.dart';
 class LocationRepositoryImpl implements LocationRepository {
   static const String _favoritesBoxName = 'favorites';
   final WeatherApiClient _apiClient;
-  final String _apiKey;
+  
+  String get _apiKey {
+    try {
+      return dotenv.env['OPENWEATHER_API_KEY'] ?? 'demo_key_for_testing';
+    } catch (e) {
+      return 'demo_key_for_testing';
+    }
+  }
 
-  LocationRepositoryImpl(this._apiClient)
-    : _apiKey = dotenv.env['WEATHER_API_KEY'] ?? 'demo_key_for_testing';
+  LocationRepositoryImpl(this._apiClient);
 
   @override
   Future<({Location? data, AppError? error})> getCurrentLocation() async {

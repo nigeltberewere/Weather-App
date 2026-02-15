@@ -12,6 +12,8 @@ import 'package:weatherly/features/search/presentation/pages/search_page.dart';
 import 'package:weatherly/core/localization/app_localizations.dart';
 import 'package:weatherly/core/widgets/weather_background.dart';
 import 'package:weatherly/features/home/presentation/providers/weather_provider.dart';
+import 'package:weatherly/features/home/presentation/providers/alert_provider.dart';
+import 'package:weatherly/features/home/presentation/widgets/weather_alert_banner.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -29,6 +31,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     final l10n = AppLocalizations.of(context)!;
 
     final locationAsync = ref.watch(currentLocationProvider);
+    
+    // Initialize alert monitoring
+    ref.watch(alertMonitoringProvider);
 
     return Scaffold(
       body: _selectedIndex == 0
@@ -174,6 +179,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                     },
                   ),
                 ],
+              ),
+              // Weather alerts banner
+              SliverToBoxAdapter(
+                child: ref.watch(weatherAlertsProvider(location)).when(
+                  data: (alerts) => WeatherAlertBanner(alerts: alerts),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
+                ),
               ),
               SliverPadding(
                 padding: const EdgeInsets.all(24),

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weatherly/core/utils/date_formatter.dart';
 import 'package:weatherly/core/utils/unit_converter.dart';
 import 'package:weatherly/core/widgets/weather_icon.dart';
+import 'package:weatherly/core/providers/settings_providers.dart';
 import 'package:weatherly/domain/entities/weather.dart';
-import 'package:weatherly/features/settings/presentation/pages/settings_page.dart';
 
 class HourlyForecastList extends ConsumerWidget {
   final List<HourlyForecast> forecasts;
@@ -13,8 +13,16 @@ class HourlyForecastList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final unit = ref.watch(unitPreferenceProvider);
+    final unitAsync = ref.watch(unitPreferenceProvider);
 
+    return unitAsync.when(
+      data: (unit) => _buildList(context, unit),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+    );
+  }
+
+  Widget _buildList(BuildContext context, String unit) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: forecasts.length,

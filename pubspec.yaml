@@ -45,8 +45,6 @@ dependencies:
   lottie: ^3.1.2
   
   # Notifications
-  firebase_core: ^4.2.1
-  firebase_messaging: ^16.0.4
   flutter_local_notifications: ^19.5.0
   
   # UI
@@ -99,6 +97,6 @@ flutter:
     - assets/images/icons/
     - assets/weather icons/fill/all/
     - assets/weather icons/line/all/
-    # Do NOT include secrets like `.env` here. Add local `.env` to .gitignore
+    - .env
   
   generate: true

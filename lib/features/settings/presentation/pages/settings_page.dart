@@ -3,17 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weatherly/app.dart';
 import 'package:weatherly/core/localization/app_localizations.dart';
 import 'package:weatherly/core/widgets/app_icon.dart';
-
-final unitPreferenceProvider = NotifierProvider<UnitPreferenceNotifier, String>(
-  UnitPreferenceNotifier.new,
-);
-
-class UnitPreferenceNotifier extends Notifier<String> {
-  @override
-  String build() => 'metric';
-
-  void set(String unit) => state = unit;
-}
+import 'package:weatherly/core/providers/settings_providers.dart';
+import 'package:weatherly/features/settings/presentation/pages/notification_settings_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -22,75 +13,94 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final themeMode = ref.watch(themeModeProvider);
-    final unitPreference = ref.watch(unitPreferenceProvider);
+    final unitPreferenceAsync = ref.watch(unitPreferenceProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
-      body: ListView(
-        children: [
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.palette_outlined),
-            title: const Text('Theme'),
-            subtitle: Text(_getThemeModeLabel(themeMode)),
-            onTap: () {
-              _showThemeDialog(context, ref);
-            },
-          ),
-
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.thermostat_outlined),
-            title: const Text('Temperature Unit'),
-            subtitle: Text(_getUnitLabel(unitPreference)),
-            onTap: () {
-              _showUnitDialog(context, ref);
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.notifications_outlined),
-            title: const Text('Notifications'),
-            subtitle: const Text('Manage weather alerts'),
-            onTap: () {
-              // Navigate to notifications settings
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.location_on_outlined),
-            title: const Text('Location'),
-            subtitle: const Text('Manage location permissions'),
-            onTap: () {
-              // Navigate to location settings
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('Privacy'),
-            subtitle: const Text('Privacy policy and data usage'),
-            onTap: () {
-              // Show privacy policy
-            },
-          ),
-          const Divider(),
-          ListTile(
-            leading: const Icon(Icons.info_outlined),
-            title: const Text('About'),
-            subtitle: const Text('Version 1.0.0'),
-            onTap: () {
-              showAboutDialog(
-                context: context,
-                applicationName: 'Weatherly',
-                applicationVersion: '1.0.0',
-                applicationLegalese: '© 2025 Weatherly',
-                applicationIcon: const AppIcon(size: 48),
-              );
-            },
-          ),
-        ],
+      body: unitPreferenceAsync.when(
+        data: (unitPreference) => _buildSettings(context, ref, l10n, themeMode, unitPreference),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(child: Text('Error: $error')),
       ),
+    );
+  }
+
+  Widget _buildSettings(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ThemeMode themeMode,
+    String unitPreference,
+  ) {
+    return ListView(
+      children: [
+        const SizedBox(height: 8),
+        ListTile(
+          leading: const Icon(Icons.palette_outlined),
+          title: const Text('Theme'),
+          subtitle: Text(_getThemeModeLabel(themeMode)),
+          onTap: () {
+            _showThemeDialog(context, ref);
+          },
+        ),
+
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.thermostat_outlined),
+          title: const Text('Temperature Unit'),
+          subtitle: Text(_getUnitLabel(unitPreference)),
+          onTap: () {
+            _showUnitDialog(context, ref);
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.notifications_outlined),
+          title: const Text('Notifications'),
+          subtitle: const Text('Manage weather alerts and notifications'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const NotificationSettingsPage(),
+              ),
+            );
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.location_on_outlined),
+          title: const Text('Location'),
+          subtitle: const Text('Manage location permissions'),
+          onTap: () {
+            // Navigate to location settings
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.privacy_tip_outlined),
+          title: const Text('Privacy'),
+          subtitle: const Text('Privacy policy and data usage'),
+          onTap: () {
+            // Show privacy policy
+          },
+        ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.info_outlined),
+          title: const Text('About'),
+          subtitle: const Text('Version 1.0.0'),
+          onTap: () {
+            showAboutDialog(
+              context: context,
+              applicationName: 'Weatherly',
+              applicationVersion: '1.0.0',
+              applicationLegalese: '© 2025 Weatherly',
+              applicationIcon: const AppIcon(size: 48),
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -195,62 +205,66 @@ class SettingsPage extends ConsumerWidget {
         title: const Text('Choose Temperature Unit'),
         content: StatefulBuilder(
           builder: (context, setState) {
-            final currentUnit = ref.watch(unitPreferenceProvider);
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  title: const Text('Celsius (°C)'),
-                  leading: Radio<String>(
-                    value: 'metric',
-                    groupValue: currentUnit,
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref.read(unitPreferenceProvider.notifier).set(value);
-                        Navigator.pop(context);
-                      }
+            final currentUnitAsync = ref.watch(unitPreferenceProvider);
+            return currentUnitAsync.when(
+              data: (currentUnit) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    title: const Text('Celsius (°C)'),
+                    leading: Radio<String>(
+                      value: 'metric',
+                      groupValue: currentUnit,
+                      onChanged: (value) {
+                        if (value != null) {
+                          ref.read(unitPreferenceProvider.notifier).setUnit(value);
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      ref.read(unitPreferenceProvider.notifier).setUnit('metric');
+                      Navigator.pop(context);
                     },
                   ),
-                  onTap: () {
-                    ref.read(unitPreferenceProvider.notifier).set('metric');
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('Fahrenheit (°F)'),
-                  leading: Radio<String>(
-                    value: 'imperial',
-                    groupValue: currentUnit,
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref.read(unitPreferenceProvider.notifier).set(value);
-                        Navigator.pop(context);
-                      }
+                  ListTile(
+                    title: const Text('Fahrenheit (°F)'),
+                    leading: Radio<String>(
+                      value: 'imperial',
+                      groupValue: currentUnit,
+                      onChanged: (value) {
+                        if (value != null) {
+                          ref.read(unitPreferenceProvider.notifier).setUnit(value);
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      ref.read(unitPreferenceProvider.notifier).setUnit('imperial');
+                      Navigator.pop(context);
                     },
                   ),
-                  onTap: () {
-                    ref.read(unitPreferenceProvider.notifier).set('imperial');
-                    Navigator.pop(context);
-                  },
-                ),
-                ListTile(
-                  title: const Text('Kelvin (K)'),
-                  leading: Radio<String>(
-                    value: 'kelvin',
-                    groupValue: currentUnit,
-                    onChanged: (value) {
-                      if (value != null) {
-                        ref.read(unitPreferenceProvider.notifier).set(value);
-                        Navigator.pop(context);
-                      }
+                  ListTile(
+                    title: const Text('Kelvin (K)'),
+                    leading: Radio<String>(
+                      value: 'kelvin',
+                      groupValue: currentUnit,
+                      onChanged: (value) {
+                        if (value != null) {
+                          ref.read(unitPreferenceProvider.notifier).setUnit(value);
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                    onTap: () {
+                      ref.read(unitPreferenceProvider.notifier).setUnit('kelvin');
+                      Navigator.pop(context);
                     },
                   ),
-                  onTap: () {
-                    ref.read(unitPreferenceProvider.notifier).set('kelvin');
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
+                ],
+              ),
+              loading: () => const CircularProgressIndicator(),
+              error: (error, stackTrace) => Text('Error: $error'),
             );
           },
         ),

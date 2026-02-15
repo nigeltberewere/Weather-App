@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:weatherly/core/errors/app_error.dart';
+import 'package:weatherly/core/services/weather_cache_service.dart';
 import 'package:weatherly/data/datasources/weather_api_client.dart';
 import 'package:weatherly/data/models/open_weather_map_response.dart';
 import 'package:weatherly/domain/entities/weather.dart';
@@ -9,21 +11,46 @@ import 'package:collection/collection.dart';
 
 class WeatherRepositoryImpl implements WeatherRepository {
   final WeatherApiClient _apiClient;
-  final String _apiKey;
+  final WeatherCacheService _cacheService;
+  
+  String get _apiKey {
+    try {
+      final key = dotenv.env['OPENWEATHER_API_KEY'];
+      if (key == null || key.isEmpty) {
+        debugPrint(
+          '❌ API Key Missing! Get a free API key from: https://openweathermap.org/api',
+        );
+        return '';
+      }
+      if (key.startsWith('your_') ||
+          key == 'demo_key_for_testing' ||
+          key == 'b6907d289e10d714a6e88b30761fae22') {
+        debugPrint(
+          '❌ Please add your real OpenWeatherMap API key to the .env file',
+        );
+        return '';
+      }
+      return key;
+    } catch (e) {
+      debugPrint('⚠️ Error reading API key: $e');
+      return '';
+    }
+  }
 
-  WeatherRepositoryImpl(this._apiClient)
-    : _apiKey = dotenv.env['WEATHER_API_KEY'] ?? 'demo_key_for_testing';
+  WeatherRepositoryImpl(this._apiClient, this._cacheService);
 
   @override
   Future<({Weather? data, AppError? error})> getCurrentWeather({
     required double latitude,
     required double longitude,
+    String units = 'metric',
   }) async {
     try {
       final response = await _apiClient.getCurrentWeather(
         lat: latitude,
         lon: longitude,
         apiKey: _apiKey,
+        units: units,
       );
 
       final weather = Weather(
@@ -51,10 +78,41 @@ class WeatherRepositoryImpl implements WeatherRepository {
         ),
       );
 
+      // Cache successful response
+      await _cacheService.cacheCurrentWeather(
+        latitude: latitude,
+        longitude: longitude,
+        weather: weather,
+        units: units,
+      );
+
       return (data: weather, error: null);
     } on DioException catch (e) {
+      // Try to get cached data if network error
+      final cachedWeather = await _cacheService.getCachedCurrentWeather(
+        latitude: latitude,
+        longitude: longitude,
+        units: units,
+      );
+      
+      if (cachedWeather != null) {
+        debugPrint('📦 Returning cached weather due to network error');
+        return (data: cachedWeather, error: null);
+      }
+      
       return (data: null, error: _handleDioError(e));
     } catch (e) {
+      // Try to get cached data on unknown error
+      final cachedWeather = await _cacheService.getCachedCurrentWeather(
+        latitude: latitude,
+        longitude: longitude,
+        units: units,
+      );
+      
+      if (cachedWeather != null) {
+        return (data: cachedWeather, error: null);
+      }
+      
       return (data: null, error: AppError.unknown(e.toString()));
     }
   }
@@ -63,12 +121,14 @@ class WeatherRepositoryImpl implements WeatherRepository {
   Future<({List<HourlyForecast>? data, AppError? error})> getHourlyForecast({
     required double latitude,
     required double longitude,
+    String units = 'metric',
   }) async {
     try {
       final response = await _apiClient.getForecast(
         lat: latitude,
         lon: longitude,
         apiKey: _apiKey,
+        units: units,
       );
 
       final hourlyForecasts = response.list.take(16).map((item) {
@@ -90,10 +150,41 @@ class WeatherRepositoryImpl implements WeatherRepository {
         );
       }).toList();
 
+      // Cache successful response
+      await _cacheService.cacheHourlyForecast(
+        latitude: latitude,
+        longitude: longitude,
+        forecast: hourlyForecasts,
+        units: units,
+      );
+
       return (data: hourlyForecasts, error: null);
     } on DioException catch (e) {
+      // Try to get cached data if network error
+      final cachedForecast = await _cacheService.getCachedHourlyForecast(
+        latitude: latitude,
+        longitude: longitude,
+        units: units,
+      );
+      
+      if (cachedForecast != null) {
+        debugPrint('📦 Returning cached hourly forecast due to network error');
+        return (data: cachedForecast, error: null);
+      }
+      
       return (data: null, error: _handleDioError(e));
     } catch (e) {
+      // Try to get cached data on unknown error
+      final cachedForecast = await _cacheService.getCachedHourlyForecast(
+        latitude: latitude,
+        longitude: longitude,
+        units: units,
+      );
+      
+      if (cachedForecast != null) {
+        return (data: cachedForecast, error: null);
+      }
+      
       return (data: null, error: AppError.unknown(e.toString()));
     }
   }
@@ -102,12 +193,14 @@ class WeatherRepositoryImpl implements WeatherRepository {
   Future<({List<DailyForecast>? data, AppError? error})> getDailyForecast({
     required double latitude,
     required double longitude,
+    String units = 'metric',
   }) async {
     try {
       final response = await _apiClient.getForecast(
         lat: latitude,
         lon: longitude,
         apiKey: _apiKey,
+        units: units,
       );
 
       // Group by day
@@ -163,10 +256,41 @@ class WeatherRepositoryImpl implements WeatherRepository {
         );
       });
 
+      // Cache successful response
+      await _cacheService.cacheDailyForecast(
+        latitude: latitude,
+        longitude: longitude,
+        forecast: dailyForecasts,
+        units: units,
+      );
+
       return (data: dailyForecasts, error: null);
     } on DioException catch (e) {
+      // Try to get cached data if network error
+      final cachedForecast = await _cacheService.getCachedDailyForecast(
+        latitude: latitude,
+        longitude: longitude,
+        units: units,
+      );
+
+      if (cachedForecast != null) {
+        debugPrint('📦 Returning cached daily forecast due to network error');
+        return (data: cachedForecast, error: null);
+      }
+
       return (data: null, error: _handleDioError(e));
     } catch (e) {
+      // Try to get cached data on unknown error
+      final cachedForecast = await _cacheService.getCachedDailyForecast(
+        latitude: latitude,
+        longitude: longitude,
+        units: units,
+      );
+
+      if (cachedForecast != null) {
+        return (data: cachedForecast, error: null);
+      }
+
       return (data: null, error: AppError.unknown(e.toString()));
     }
   }
@@ -215,7 +339,111 @@ class WeatherRepositoryImpl implements WeatherRepository {
     required double latitude,
     required double longitude,
   }) async {
-    return (data: <WeatherAlert>[], error: null);
+    try {
+      // Generate alerts based on current weather conditions
+      // This provides intelligent alerts based on severe weather patterns
+      // without requiring a paid subscription to OpenWeatherMap's One Call API
+      
+      final currentWeatherResult = await getCurrentWeather(
+        latitude: latitude,
+        longitude: longitude,
+      );
+
+      if (currentWeatherResult.error != null) {
+        return (data: null, error: currentWeatherResult.error);
+      }
+
+      final weather = currentWeatherResult.data!;
+      final alerts = <WeatherAlert>[];
+      final now = DateTime.now();
+
+      // Extreme temperature alerts
+      if (weather.temperature > 40) {
+        alerts.add(WeatherAlert(
+          event: 'Extreme Heat Warning',
+          description: 'Temperature is ${weather.temperature.round()}°C. '
+              'Stay hydrated and avoid prolonged sun exposure.',
+          start: now,
+          end: now.add(const Duration(hours: 6)),
+          severity: 'Extreme',
+          senderName: 'Weatherly Alert System',
+        ));
+      } else if (weather.temperature < -20) {
+        alerts.add(WeatherAlert(
+          event: 'Extreme Cold Warning',
+          description: 'Temperature is ${weather.temperature.round()}°C. '
+              'Dress warmly and limit time outdoors.',
+          start: now,
+          end: now.add(const Duration(hours: 6)),
+          severity: 'Extreme',
+          senderName: 'Weatherly Alert System',
+        ));
+      }
+
+      // High wind alerts
+      if (weather.windSpeed > 50) {
+        alerts.add(WeatherAlert(
+          event: 'High Wind Warning',
+          description: 'Wind speed is ${weather.windSpeed.round()} km/h. '
+              'Secure loose objects and avoid outdoor activities.',
+          start: now,
+          end: now.add(const Duration(hours: 3)),
+          severity: 'Severe',
+          senderName: 'Weatherly Alert System',
+        ));
+      }
+
+      // Severe weather condition alerts
+      if (weather.condition != null) {
+        final condition = weather.condition!.toLowerCase();
+        
+        if (condition.contains('thunderstorm')) {
+          alerts.add(WeatherAlert(
+            event: 'Thunderstorm Alert',
+            description: 'Thunderstorms in the area. Seek shelter indoors '
+                'and avoid open areas.',
+            start: now,
+            end: now.add(const Duration(hours: 2)),
+            severity: 'Moderate',
+            senderName: 'Weatherly Alert System',
+          ));
+        }
+        
+        if (condition.contains('snow')) {
+          alerts.add(WeatherAlert(
+            event: 'Snow Alert',
+            description: 'Snowfall expected. Drive carefully and prepare '
+                'for slippery conditions.',
+            start: now,
+            end: now.add(const Duration(hours: 4)),
+            severity: 'Moderate',
+            senderName: 'Weatherly Alert System',
+          ));
+        }
+      }
+
+      // Poor visibility alert
+      if (weather.visibility < 1) {
+        alerts.add(WeatherAlert(
+          event: 'Low Visibility Warning',
+          description: 'Visibility is less than 1km. Exercise caution '
+              'when traveling.',
+          start: now,
+          end: now.add(const Duration(hours: 2)),
+          severity: 'Moderate',
+          senderName: 'Weatherly Alert System',
+        ));
+      }
+
+      return (data: alerts, error: null);
+    } on DioException catch (e) {
+      return (data: null, error: _handleDioError(e));
+    } catch (e) {
+      return (
+        data: null,
+        error: AppError.unknown('Failed to fetch weather alerts: $e'),
+      );
+    }
   }
 
   AppError _handleDioError(DioException error) {

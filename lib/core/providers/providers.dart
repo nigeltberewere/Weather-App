@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weatherly/core/constants/app_constants.dart';
+import 'package:weatherly/core/services/weather_cache_service.dart';
 import 'package:weatherly/data/datasources/weather_api_client.dart';
 import 'package:weatherly/data/repositories/location_repository_impl.dart';
 import 'package:weatherly/data/repositories/weather_repository_impl.dart';
@@ -21,9 +22,14 @@ final weatherApiClientProvider = Provider<WeatherApiClient>((ref) {
   return WeatherApiClient(dio);
 });
 
+final weatherCacheServiceProvider = Provider<WeatherCacheService>((ref) {
+  return WeatherCacheService();
+});
+
 final weatherRepositoryProvider = Provider<WeatherRepository>((ref) {
   final apiClient = ref.watch(weatherApiClientProvider);
-  return WeatherRepositoryImpl(apiClient);
+  final cacheService = ref.watch(weatherCacheServiceProvider);
+  return WeatherRepositoryImpl(apiClient, cacheService);
 });
 
 final locationRepositoryProvider = Provider<LocationRepository>((ref) {

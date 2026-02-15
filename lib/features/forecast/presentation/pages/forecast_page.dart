@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:weatherly/core/errors/app_error.dart';
 import 'package:weatherly/core/providers/providers.dart';
+import 'package:weatherly/core/providers/settings_providers.dart';
 import 'package:weatherly/domain/entities/weather.dart';
 import 'package:weatherly/core/theme/app_colors.dart';
 import 'package:weatherly/core/widgets/weather_background.dart';
@@ -16,18 +17,25 @@ final hourlyForecastProvider =
       location,
     ) async {
       final repository = ref.watch(weatherRepositoryProvider);
+      final unitsAsync = ref.watch(weatherApiUnitsProvider);
+      final units = await unitsAsync.when<Future<String>>(
+        data: (u) async => u,
+        loading: () async => 'metric',
+        error: (_, __) async => 'metric',
+      );
       final result = await repository.getHourlyForecast(
         latitude: location.latitude,
         longitude: location.longitude,
+        units: units,
       );
       if (result.error != null) {
-        throw result.error!.map(
-          network: (e) => e.message,
-          server: (e) => e.message,
-          location: (e) => e.message,
-          permission: (e) => e.message,
-          cache: (e) => e.message,
-          unknown: (e) => e.message,
+        throw result.error!.when(
+          network: (message) => message,
+          server: (message) => message,
+          location: (message) => message,
+          permission: (message) => message,
+          cache: (message) => message,
+          unknown: (message) => message,
         );
       }
       return result.data;
@@ -39,18 +47,25 @@ final dailyForecastProvider =
       location,
     ) async {
       final repository = ref.watch(weatherRepositoryProvider);
+      final unitsAsync = ref.watch(weatherApiUnitsProvider);
+      final units = await unitsAsync.when<Future<String>>(
+        data: (u) async => u,
+        loading: () async => 'metric',
+        error: (_, __) async => 'metric',
+      );
       final result = await repository.getDailyForecast(
         latitude: location.latitude,
         longitude: location.longitude,
+        units: units,
       );
       if (result.error != null) {
-        throw result.error!.map(
-          network: (e) => e.message,
-          server: (e) => e.message,
-          location: (e) => e.message,
-          permission: (e) => e.message,
-          cache: (e) => e.message,
-          unknown: (e) => e.message,
+        throw result.error!.when(
+          network: (message) => message,
+          server: (message) => message,
+          location: (message) => message,
+          permission: (message) => message,
+          cache: (message) => message,
+          unknown: (message) => message,
         );
       }
       return result.data;
