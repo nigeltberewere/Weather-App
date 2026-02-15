@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local environment file (do not commit secrets)
+.env
+
+# Firebase / Google service files (should be supplied per-platform outside VCS)
+google-services.json
+GoogleService-Info.plist

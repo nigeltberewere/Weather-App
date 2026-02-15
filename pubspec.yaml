@@ -99,6 +99,6 @@ flutter:
     - assets/images/icons/
     - assets/weather icons/fill/all/
     - assets/weather icons/line/all/
-    - .env
+    # Do NOT include secrets like `.env` here. Add local `.env` to .gitignore
   
   generate: true

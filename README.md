@@ -43,7 +43,7 @@ A production-ready, cross-platform Flutter weather application featuring current
 flutter pub get
 ```
 
-### 2. Configure API Keys
+### 2. Configure API Keys (local only)
 
 Create a `.env` file in the project root (copy from `.env.example`):
 
@@ -51,16 +51,14 @@ Create a `.env` file in the project root (copy from `.env.example`):
 cp .env.example .env
 ```
 
-Edit `.env` and add your API keys:
+Edit `.env` and add your API keys locally. Do NOT commit `.env` to source control — it is ignored by `.gitignore` and CI should use repository secrets instead.
 
 ```env
 OPENWEATHER_API_KEY=your_openweather_api_key_here
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 ```
 
-**Get API Keys:**
-- **OpenWeatherMap**: Sign up at [https://openweathermap.org/api](https://openweathermap.org/api)
-- **Google Maps**: Get key at [https://console.cloud.google.com/](https://console.cloud.google.com/)
+Get API keys from the provider consoles and inject secrets into CI (GitHub Actions) via repository secrets named `OPENWEATHER_API_KEY`, `GOOGLE_MAPS_API_KEY`, etc.
 
 ### 3. Run Code Generation
 
