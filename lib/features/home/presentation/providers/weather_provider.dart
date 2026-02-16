@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:weatherly/core/errors/app_error.dart';
 import 'package:weatherly/core/providers/providers.dart';
 import 'package:weatherly/core/providers/settings_providers.dart';
 import 'package:weatherly/domain/entities/weather.dart';

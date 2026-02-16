@@ -87,7 +87,9 @@ class NotificationService {
           importance: _getImportance(alert.severity),
           priority: Priority.high,
           showWhen: true,
-          icon: '@mipmap/launcher_icon',
+          largeIcon: const DrawableResourceAndroidBitmap('ic_launcher_foreground'),
+          enableLights: true,
+          enableVibration: true,
         ),
         iOS: const DarwinNotificationDetails(
           presentAlert: true,
@@ -127,7 +129,10 @@ class NotificationService {
           channelDescription: 'Daily weather forecast summary',
           importance: Importance.defaultImportance,
           priority: Priority.defaultPriority,
-          icon: '@mipmap/launcher_icon',
+
+          largeIcon: DrawableResourceAndroidBitmap('ic_launcher_foreground'),
+          enableLights: true,
+          enableVibration: true,
         ),
         iOS: DarwinNotificationDetails(
           presentAlert: true,

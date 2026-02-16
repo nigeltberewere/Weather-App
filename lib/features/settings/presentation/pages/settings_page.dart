@@ -4,6 +4,7 @@ import 'package:weatherly/app.dart';
 import 'package:weatherly/core/localization/app_localizations.dart';
 import 'package:weatherly/core/widgets/app_icon.dart';
 import 'package:weatherly/core/providers/settings_providers.dart';
+import 'package:weatherly/core/providers/app_providers.dart';
 import 'package:weatherly/features/settings/presentation/pages/notification_settings_page.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -32,6 +33,7 @@ class SettingsPage extends ConsumerWidget {
     ThemeMode themeMode,
     String unitPreference,
   ) {
+    final appVersionAsync = ref.watch(appVersionProvider);
     return ListView(
       children: [
         const SizedBox(height: 8),
@@ -86,19 +88,32 @@ class SettingsPage extends ConsumerWidget {
           },
         ),
         const Divider(),
-        ListTile(
-          leading: const Icon(Icons.info_outlined),
-          title: const Text('About'),
-          subtitle: const Text('Version 1.0.0'),
-          onTap: () {
-            showAboutDialog(
-              context: context,
-              applicationName: 'Weatherly',
-              applicationVersion: '1.0.0',
-              applicationLegalese: '© 2025 Weatherly',
-              applicationIcon: const AppIcon(size: 48),
-            );
-          },
+        appVersionAsync.when(
+          data: (version) => ListTile(
+            leading: const Icon(Icons.info_outlined),
+            title: const Text('About'),
+            subtitle: Text('Version $version'),
+            onTap: () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'Weatherly',
+                applicationVersion: version,
+                applicationLegalese: '© 2025 Weatherly',
+                applicationIcon: const AppIcon(size: 48),
+              );
+            },
+          ),
+          loading: () => const ListTile(
+            leading: Icon(Icons.info_outlined),
+            title: Text('About'),
+            subtitle: Text('Loading version...'),
+          ),
+          error: (_, __) => const ListTile(
+            leading: Icon(Icons.info_outlined),
+            title: Text('About'),
+            subtitle: Text('Version unavailable'),
+            onTap: null,
+          ),
         ),
       ],
     );

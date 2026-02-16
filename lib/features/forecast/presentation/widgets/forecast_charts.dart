@@ -30,11 +30,13 @@ class HourlyForecastChart extends ConsumerWidget {
   }
 
   Widget _buildChart(BuildContext context, String unit) {
+    // Limit to 12 hours for better readability
+    final displayForecasts = forecasts.take(12).toList();
     final tempSpots = <FlSpot>[];
     final precipSpots = <BarChartRodData>[];
 
-    for (var i = 0; i < forecasts.length; i++) {
-      final forecast = forecasts[i];
+    for (var i = 0; i < displayForecasts.length; i++) {
+      final forecast = displayForecasts[i];
       tempSpots.add(FlSpot(i.toDouble(), forecast.temperature));
       precipSpots.add(
         BarChartRodData(
@@ -53,7 +55,7 @@ class HourlyForecastChart extends ConsumerWidget {
       );
     }
 
-    final temps = forecasts.map((f) => f.temperature).toList();
+    final temps = displayForecasts.map((f) => f.temperature).toList();
     final minTemp = temps.reduce((a, b) => a < b ? a : b);
     final maxTemp = temps.reduce((a, b) => a > b ? a : b);
     final padding = (maxTemp - minTemp) * 0.2;
@@ -135,14 +137,14 @@ class HourlyForecastChart extends ConsumerWidget {
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    interval: (forecasts.length / 4).clamp(1, 6),
+                    interval: (displayForecasts.length / 6).clamp(1, 6),
                     getTitlesWidget: (value, meta) {
                       final index = value.toInt();
-                      if (index < 0 || index >= forecasts.length) {
+                      if (index < 0 || index >= displayForecasts.length) {
                         return const SizedBox.shrink();
                       }
                       final label = DateFormatter.formatHour(
-                        forecasts[index].time,
+                        displayForecasts[index].time,
                       );
                       return Padding(
                         padding: const EdgeInsets.only(top: 8),
@@ -267,9 +269,30 @@ class HourlyForecastChart extends ConsumerWidget {
                     interval: 25,
                   ),
                 ),
-                bottomTitles: const AxisTitles(
+                bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
-                    showTitles: false,
+                    showTitles: true,
+                    interval: (displayForecasts.length / 6).clamp(1, 6),
+                    getTitlesWidget: (value, meta) {
+                      final index = value.toInt();
+                      if (index < 0 || index >= displayForecasts.length) {
+                        return const SizedBox.shrink();
+                      }
+                      final label = DateFormatter.formatHour(
+                        displayForecasts[index].time,
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -285,18 +308,6 @@ class HourlyForecastChart extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  String _unitLabel(String unit) {
-    switch (unit) {
-      case 'imperial':
-        return 'F';
-      case 'kelvin':
-        return 'K';
-      case 'metric':
-      default:
-        return 'C';
-    }
   }
 }
 
@@ -638,17 +649,5 @@ class DailyForecastChart extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  String _unitLabel(String unit) {
-    switch (unit) {
-      case 'imperial':
-        return 'F';
-      case 'kelvin':
-        return 'K';
-      case 'metric':
-      default:
-        return 'C';
-    }
   }
 }
