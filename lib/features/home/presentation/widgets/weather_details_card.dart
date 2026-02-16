@@ -48,6 +48,11 @@ class WeatherDetailsCard extends ConsumerWidget {
         iconPath: 'assets/weather icons/fill/all/uv-index.svg',
       ),
       _WeatherDetail(
+        label: l10n.dewPoint,
+        value: UnitConverter.formatTemperature(weather.dewPoint, unit),
+        iconPath: 'assets/weather icons/fill/all/thermometer-glass.svg',
+      ),
+      _WeatherDetail(
         label: l10n.visibility,
         value: UnitConverter.formatVisibility(weather.visibility, unit),
         iconPath: 'assets/weather icons/fill/all/mist.svg',

@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:hive/hive.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weatherly/core/errors/app_error.dart';
 import 'package:weatherly/data/datasources/weather_api_client.dart';
 import 'package:weatherly/domain/entities/weather.dart';
@@ -128,6 +129,23 @@ class LocationRepositoryImpl implements LocationRepository {
       debugPrint(
         'LocationRepository: Location object created: ${location.name}',
       );
+
+      // Save location for background fetch
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setDouble('last_location_lat', location.latitude);
+        await prefs.setDouble('last_location_lon', location.longitude);
+        await prefs.setString('last_location_name', location.name);
+        if (location.country != null) {
+          await prefs.setString('last_location_country', location.country!);
+        }
+        if (location.state != null) {
+          await prefs.setString('last_location_state', location.state!);
+        }
+        debugPrint('✅ Location saved for background fetch');
+      } catch (e) {
+        debugPrint('⚠️ Failed to save location for background fetch: $e');
+      }
 
       return (data: location, error: null);
     } catch (e) {

@@ -17,7 +17,7 @@ _Weather _$WeatherFromJson(Map<String, dynamic> json) => _Weather(
   pressure: (json['pressure'] as num).toInt(),
   visibility: (json['visibility'] as num).toInt(),
   dewPoint: (json['dewPoint'] as num).toDouble(),
-  uvIndex: (json['uvIndex'] as num).toInt(),
+  uvIndex: (json['uvIndex'] as num).toDouble(),
   sunrise: DateTime.parse(json['sunrise'] as String),
   sunset: DateTime.parse(json['sunset'] as String),
   timestamp: DateTime.parse(json['timestamp'] as String),

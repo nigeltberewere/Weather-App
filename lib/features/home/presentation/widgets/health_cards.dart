@@ -210,11 +210,11 @@ class AirQualityCard extends ConsumerWidget {
 }
 
 class UVHealthGuidanceCard extends ConsumerWidget {
-  final int uvIndex;
+  final double uvIndex;
 
   const UVHealthGuidanceCard({super.key, required this.uvIndex});
 
-  Color _getUVColor(int uv) {
+  Color _getUVColor(double uv) {
     if (uv <= 2) return const Color(0xFF2ECC71); // Green
     if (uv <= 5) return const Color(0xFFF1C40F); // Yellow
     if (uv <= 7) return const Color(0xFFE67E22); // Orange
@@ -222,7 +222,7 @@ class UVHealthGuidanceCard extends ConsumerWidget {
     return const Color(0xFF8B0000); // Maroon
   }
 
-  String _getUVLevel(int uv) {
+  String _getUVLevel(double uv) {
     if (uv <= 2) return 'Low';
     if (uv <= 5) return 'Moderate';
     if (uv <= 7) return 'High';
@@ -230,7 +230,7 @@ class UVHealthGuidanceCard extends ConsumerWidget {
     return 'Extreme';
   }
 
-  String _getUVRecommendation(int uv) {
+  String _getUVRecommendation(double uv) {
     if (uv <= 2) {
       return '🟢 Low UV Index\n• Minimal sun protection needed\n• Reapply sunscreen after activities\n• Enjoy outdoor activities freely';
     } else if (uv <= 5) {
@@ -341,7 +341,7 @@ class UVHealthGuidanceCard extends ConsumerWidget {
                       ],
                     ),
                     child: Text(
-                      '$uvIndex - $uvLevel',
+                      '${uvIndex.toStringAsFixed(1)} - $uvLevel',
                       style: TextStyle(
                         color: uvColor,
                         fontSize: 16,
@@ -373,7 +373,7 @@ class UVHealthGuidanceCard extends ConsumerWidget {
                 ),
                 child: Center(
                   child: Text(
-                    '$uvIndex',
+                    uvIndex.toStringAsFixed(1),
                     style: TextStyle(
                       color: uvColor,
                       fontSize: 32,

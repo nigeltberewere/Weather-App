@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Weather {
 
- double get temperature; double get feelsLike; String get description; String get icon; int get humidity; double get windSpeed; int get windDegree; int get pressure; int get visibility; double get dewPoint; int get uvIndex; DateTime get sunrise; DateTime get sunset; DateTime get timestamp; String? get condition;
+ double get temperature; double get feelsLike; String get description; String get icon; int get humidity; double get windSpeed; int get windDegree; int get pressure; int get visibility; double get dewPoint; double get uvIndex; DateTime get sunrise; DateTime get sunset; DateTime get timestamp; String? get condition;
 /// Create a copy of Weather
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $WeatherCopyWith<$Res>  {
   factory $WeatherCopyWith(Weather value, $Res Function(Weather) _then) = _$WeatherCopyWithImpl;
 @useResult
 $Res call({
- double temperature, double feelsLike, String description, String icon, int humidity, double windSpeed, int windDegree, int pressure, int visibility, double dewPoint, int uvIndex, DateTime sunrise, DateTime sunset, DateTime timestamp, String? condition
+ double temperature, double feelsLike, String description, String icon, int humidity, double windSpeed, int windDegree, int pressure, int visibility, double dewPoint, double uvIndex, DateTime sunrise, DateTime sunset, DateTime timestamp, String? condition
 });
 
 
@@ -78,7 +78,7 @@ as int,pressure: null == pressure ? _self.pressure : pressure // ignore: cast_nu
 as int,visibility: null == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
 as int,dewPoint: null == dewPoint ? _self.dewPoint : dewPoint // ignore: cast_nullable_to_non_nullable
 as double,uvIndex: null == uvIndex ? _self.uvIndex : uvIndex // ignore: cast_nullable_to_non_nullable
-as int,sunrise: null == sunrise ? _self.sunrise : sunrise // ignore: cast_nullable_to_non_nullable
+as double,sunrise: null == sunrise ? _self.sunrise : sunrise // ignore: cast_nullable_to_non_nullable
 as DateTime,sunset: null == sunset ? _self.sunset : sunset // ignore: cast_nullable_to_non_nullable
 as DateTime,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,condition: freezed == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
@@ -167,7 +167,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double temperature,  double feelsLike,  String description,  String icon,  int humidity,  double windSpeed,  int windDegree,  int pressure,  int visibility,  double dewPoint,  int uvIndex,  DateTime sunrise,  DateTime sunset,  DateTime timestamp,  String? condition)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double temperature,  double feelsLike,  String description,  String icon,  int humidity,  double windSpeed,  int windDegree,  int pressure,  int visibility,  double dewPoint,  double uvIndex,  DateTime sunrise,  DateTime sunset,  DateTime timestamp,  String? condition)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Weather() when $default != null:
 return $default(_that.temperature,_that.feelsLike,_that.description,_that.icon,_that.humidity,_that.windSpeed,_that.windDegree,_that.pressure,_that.visibility,_that.dewPoint,_that.uvIndex,_that.sunrise,_that.sunset,_that.timestamp,_that.condition);case _:
@@ -188,7 +188,7 @@ return $default(_that.temperature,_that.feelsLike,_that.description,_that.icon,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double temperature,  double feelsLike,  String description,  String icon,  int humidity,  double windSpeed,  int windDegree,  int pressure,  int visibility,  double dewPoint,  int uvIndex,  DateTime sunrise,  DateTime sunset,  DateTime timestamp,  String? condition)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double temperature,  double feelsLike,  String description,  String icon,  int humidity,  double windSpeed,  int windDegree,  int pressure,  int visibility,  double dewPoint,  double uvIndex,  DateTime sunrise,  DateTime sunset,  DateTime timestamp,  String? condition)  $default,) {final _that = this;
 switch (_that) {
 case _Weather():
 return $default(_that.temperature,_that.feelsLike,_that.description,_that.icon,_that.humidity,_that.windSpeed,_that.windDegree,_that.pressure,_that.visibility,_that.dewPoint,_that.uvIndex,_that.sunrise,_that.sunset,_that.timestamp,_that.condition);case _:
@@ -208,7 +208,7 @@ return $default(_that.temperature,_that.feelsLike,_that.description,_that.icon,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double temperature,  double feelsLike,  String description,  String icon,  int humidity,  double windSpeed,  int windDegree,  int pressure,  int visibility,  double dewPoint,  int uvIndex,  DateTime sunrise,  DateTime sunset,  DateTime timestamp,  String? condition)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double temperature,  double feelsLike,  String description,  String icon,  int humidity,  double windSpeed,  int windDegree,  int pressure,  int visibility,  double dewPoint,  double uvIndex,  DateTime sunrise,  DateTime sunset,  DateTime timestamp,  String? condition)?  $default,) {final _that = this;
 switch (_that) {
 case _Weather() when $default != null:
 return $default(_that.temperature,_that.feelsLike,_that.description,_that.icon,_that.humidity,_that.windSpeed,_that.windDegree,_that.pressure,_that.visibility,_that.dewPoint,_that.uvIndex,_that.sunrise,_that.sunset,_that.timestamp,_that.condition);case _:
@@ -236,7 +236,7 @@ class _Weather implements Weather {
 @override final  int pressure;
 @override final  int visibility;
 @override final  double dewPoint;
-@override final  int uvIndex;
+@override final  double uvIndex;
 @override final  DateTime sunrise;
 @override final  DateTime sunset;
 @override final  DateTime timestamp;
@@ -275,7 +275,7 @@ abstract mixin class _$WeatherCopyWith<$Res> implements $WeatherCopyWith<$Res> {
   factory _$WeatherCopyWith(_Weather value, $Res Function(_Weather) _then) = __$WeatherCopyWithImpl;
 @override @useResult
 $Res call({
- double temperature, double feelsLike, String description, String icon, int humidity, double windSpeed, int windDegree, int pressure, int visibility, double dewPoint, int uvIndex, DateTime sunrise, DateTime sunset, DateTime timestamp, String? condition
+ double temperature, double feelsLike, String description, String icon, int humidity, double windSpeed, int windDegree, int pressure, int visibility, double dewPoint, double uvIndex, DateTime sunrise, DateTime sunset, DateTime timestamp, String? condition
 });
 
 
@@ -305,7 +305,7 @@ as int,pressure: null == pressure ? _self.pressure : pressure // ignore: cast_nu
 as int,visibility: null == visibility ? _self.visibility : visibility // ignore: cast_nullable_to_non_nullable
 as int,dewPoint: null == dewPoint ? _self.dewPoint : dewPoint // ignore: cast_nullable_to_non_nullable
 as double,uvIndex: null == uvIndex ? _self.uvIndex : uvIndex // ignore: cast_nullable_to_non_nullable
-as int,sunrise: null == sunrise ? _self.sunrise : sunrise // ignore: cast_nullable_to_non_nullable
+as double,sunrise: null == sunrise ? _self.sunrise : sunrise // ignore: cast_nullable_to_non_nullable
 as DateTime,sunset: null == sunset ? _self.sunset : sunset // ignore: cast_nullable_to_non_nullable
 as DateTime,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,condition: freezed == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable

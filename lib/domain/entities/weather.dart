@@ -16,7 +16,7 @@ abstract class Weather with _$Weather {
     required int pressure,
     required int visibility,
     required double dewPoint,
-    required int uvIndex,
+    required double uvIndex,
     required DateTime sunrise,
     required DateTime sunset,
     required DateTime timestamp,

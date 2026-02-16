@@ -39,9 +39,16 @@ class HourlyForecastChart extends ConsumerWidget {
       precipSpots.add(
         BarChartRodData(
           toY: forecast.precipitationProbability.toDouble(),
-          color: Colors.lightBlueAccent,
-          width: 6,
-          borderRadius: BorderRadius.circular(2),
+          gradient: LinearGradient(
+            colors: [
+              Colors.blue.shade300,
+              Colors.blue.shade600,
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+          width: 8,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
         ),
       );
     }
@@ -56,20 +63,51 @@ class HourlyForecastChart extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Temperature',
-            style: TextStyle(fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            children: [
+              Icon(Icons.thermostat, size: 20, color: Colors.white.withOpacity(0.9)),
+              const SizedBox(width: 8),
+              const Text(
+                'Temperature',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          height: 180,
+        Container(
+          height: 160,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          padding: const EdgeInsets.all(12),
           child: LineChart(
             LineChartData(
               minY: minY,
               maxY: maxY,
-              gridData: const FlGridData(show: true),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    color: Colors.white.withOpacity(0.1),
+                    strokeWidth: 1,
+                  );
+                },
+              ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 topTitles: const AxisTitles(
@@ -81,9 +119,16 @@ class HourlyForecastChart extends ConsumerWidget {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 36,
+                    reservedSize: 42,
                     getTitlesWidget: (value, meta) {
-                      return Text(value.toStringAsFixed(0));
+                      return Text(
+                        '${value.toStringAsFixed(0)}°',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -100,8 +145,15 @@ class HourlyForecastChart extends ConsumerWidget {
                         forecasts[index].time,
                       );
                       return Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text(label, style: const TextStyle(fontSize: 10)),
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -111,28 +163,85 @@ class HourlyForecastChart extends ConsumerWidget {
                 LineChartBarData(
                   spots: tempSpots,
                   isCurved: true,
-                  barWidth: 3,
-                  dotData: const FlDotData(show: false),
-                  color: Colors.orangeAccent,
+                  barWidth: 3.5,
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, barData, index) {
+                      return FlDotCirclePainter(
+                        radius: 4,
+                        color: Colors.white,
+                        strokeWidth: 2,
+                        strokeColor: Colors.orangeAccent,
+                      );
+                    },
+                  ),
+                  gradient: const LinearGradient(
+                    colors: [
+                      Colors.orangeAccent,
+                      Colors.deepOrangeAccent,
+                    ],
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.orangeAccent.withOpacity(0.3),
+                        Colors.orangeAccent.withOpacity(0.0),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Precipitation Probability',
-            style: TextStyle(fontWeight: FontWeight.bold),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            children: [
+              Icon(Icons.water_drop, size: 20, color: Colors.white.withOpacity(0.9)),
+              const SizedBox(width: 8),
+              const Text(
+                'Precipitation Probability',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          height: 140,
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          padding: const EdgeInsets.all(12),
           child: BarChart(
             BarChartData(
               maxY: 100,
-              gridData: const FlGridData(show: true),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    color: Colors.white.withOpacity(0.1),
+                    strokeWidth: 1,
+                  );
+                },
+              ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 topTitles: const AxisTitles(
@@ -144,9 +253,16 @@ class HourlyForecastChart extends ConsumerWidget {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 36,
+                    reservedSize: 42,
                     getTitlesWidget: (value, meta) {
-                      return Text('${value.toInt()}%');
+                      return Text(
+                        '${value.toInt()}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
                     },
                     interval: 25,
                   ),
@@ -165,13 +281,6 @@ class HourlyForecastChart extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Text(
-            'Units: ${_unitLabel(unit)}',
-            style: TextStyle(color: Colors.grey[400], fontSize: 12),
           ),
         ),
       ],
@@ -226,9 +335,16 @@ class DailyForecastChart extends ConsumerWidget {
       precipBars.add(
         BarChartRodData(
           toY: forecast.precipitationProbability.toDouble(),
-          color: Colors.lightBlueAccent,
+          gradient: LinearGradient(
+            colors: [
+              Colors.blue.shade300,
+              Colors.blue.shade700,
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
           width: 10,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
         ),
       );
     }
@@ -246,20 +362,51 @@ class DailyForecastChart extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Daily Temperature',
-            style: TextStyle(fontWeight: FontWeight.bold),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            children: [
+              Icon(Icons.thermostat, size: 20, color: Colors.white.withOpacity(0.9)),
+              const SizedBox(width: 8),
+              const Text(
+                'Daily Temperature',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          height: 180,
+        Container(
+          height: 170,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          padding: const EdgeInsets.all(12),
           child: LineChart(
             LineChartData(
               minY: minY,
               maxY: maxY,
-              gridData: const FlGridData(show: true),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    color: Colors.white.withOpacity(0.1),
+                    strokeWidth: 1,
+                  );
+                },
+              ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 topTitles: const AxisTitles(
@@ -271,9 +418,16 @@ class DailyForecastChart extends ConsumerWidget {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 36,
+                    reservedSize: 42,
                     getTitlesWidget: (value, meta) {
-                      return Text(value.toStringAsFixed(0));
+                      return Text(
+                        '${value.toStringAsFixed(0)}°',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
                     },
                   ),
                 ),
@@ -290,8 +444,15 @@ class DailyForecastChart extends ConsumerWidget {
                         forecasts[index].date,
                       );
                       return Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text(label, style: const TextStyle(fontSize: 10)),
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -301,35 +462,118 @@ class DailyForecastChart extends ConsumerWidget {
                 LineChartBarData(
                   spots: maxTempSpots,
                   isCurved: true,
-                  barWidth: 3,
-                  dotData: const FlDotData(show: false),
-                  color: Colors.redAccent,
+                  barWidth: 3.2,
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, barData, index) {
+                      return FlDotCirclePainter(
+                        radius: 4,
+                        color: Colors.white,
+                        strokeWidth: 2,
+                        strokeColor: Colors.redAccent,
+                      );
+                    },
+                  ),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.redAccent,
+                      Colors.deepOrangeAccent,
+                    ],
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.redAccent.withOpacity(0.3),
+                        Colors.redAccent.withOpacity(0.0),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
                 ),
                 LineChartBarData(
                   spots: minTempSpots,
                   isCurved: true,
-                  barWidth: 3,
-                  dotData: const FlDotData(show: false),
-                  color: Colors.blueAccent,
+                  barWidth: 3.0,
+                  dotData: FlDotData(
+                    show: true,
+                    getDotPainter: (spot, percent, barData, index) {
+                      return FlDotCirclePainter(
+                        radius: 3,
+                        color: Colors.white,
+                        strokeWidth: 2,
+                        strokeColor: Colors.blueAccent,
+                      );
+                    },
+                  ),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.lightBlueAccent,
+                      Colors.blueAccent,
+                    ],
+                  ),
+                  belowBarData: BarAreaData(
+                    show: true,
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.blueAccent.withOpacity(0.25),
+                        Colors.blueAccent.withOpacity(0.0),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(
-            'Daily Precipitation Probability',
-            style: TextStyle(fontWeight: FontWeight.bold),
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            children: [
+              Icon(Icons.water_drop, size: 20, color: Colors.white.withOpacity(0.9)),
+              const SizedBox(width: 8),
+              const Text(
+                'Daily Precipitation Probability',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          height: 140,
+        Container(
+          height: 120,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          padding: const EdgeInsets.all(12),
           child: BarChart(
             BarChartData(
               maxY: 100,
-              gridData: const FlGridData(show: true),
+              gridData: FlGridData(
+                show: true,
+                drawVerticalLine: false,
+                getDrawingHorizontalLine: (value) {
+                  return FlLine(
+                    color: Colors.white.withOpacity(0.1),
+                    strokeWidth: 1,
+                  );
+                },
+              ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 topTitles: const AxisTitles(
@@ -341,9 +585,16 @@ class DailyForecastChart extends ConsumerWidget {
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 36,
+                    reservedSize: 42,
                     getTitlesWidget: (value, meta) {
-                      return Text('${value.toInt()}%');
+                      return Text(
+                        '${value.toInt()}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
                     },
                     interval: 25,
                   ),
@@ -362,7 +613,14 @@ class DailyForecastChart extends ConsumerWidget {
                       );
                       return Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: Text(label, style: const TextStyle(fontSize: 10)),
+                        child: Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -376,13 +634,6 @@ class DailyForecastChart extends ConsumerWidget {
                 ),
               ),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Text(
-            'Units: ${_unitLabel(unit)}',
-            style: TextStyle(color: Colors.grey[400], fontSize: 12),
           ),
         ),
       ],

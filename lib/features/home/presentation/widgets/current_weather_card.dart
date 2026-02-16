@@ -121,7 +121,7 @@ class CurrentWeatherCard extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
+                const Icon(
                   Icons.thermostat_outlined,
                   size: 18,
                   color: AppColors.textSecondary,

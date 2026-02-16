@@ -2,7 +2,7 @@ name: weatherly
 description: "Production-ready Flutter weather app with forecasts, radar, and alerts."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.9.2
@@ -47,6 +47,9 @@ dependencies:
   
   # Notifications
   flutter_local_notifications: ^19.5.0
+  
+  # Background Tasks
+  background_fetch: ^1.4.2
   
   # UI
   intl: ^0.20.2

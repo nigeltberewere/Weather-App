@@ -29,6 +29,7 @@ class AppLocalizations {
   String get pressure => 'Pressure';
   String get visibility => 'Visibility';
   String get uvIndex => 'UV Index';
+  String get dewPoint => 'Dew Point';
   String get sunrise => 'Sunrise';
   String get sunset => 'Sunset';
   String get searchLocation => 'Search location';

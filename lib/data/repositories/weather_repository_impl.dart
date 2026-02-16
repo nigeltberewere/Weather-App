@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:math' as math;
 import 'package:weatherly/core/errors/app_error.dart';
 import 'package:weatherly/core/services/weather_cache_service.dart';
 import 'package:weatherly/data/datasources/weather_api_client.dart';
@@ -39,6 +40,26 @@ class WeatherRepositoryImpl implements WeatherRepository {
 
   WeatherRepositoryImpl(this._apiClient, this._cacheService);
 
+  /// Calculate dew point using Magnus approximation formula
+  /// Based on temperature and relative humidity
+  /// Td = T - ((100 - RH) / 5) for quick approximation
+  /// More accurate Magnus formula: Td = (b * alpha) / (a - alpha)
+  /// where alpha = ((a * T) / (b + T)) + ln(RH/100)
+  double _calculateDewPoint(double temperature, int humidity) {
+    if (humidity <= 0) return temperature - 50;
+    if (humidity >= 100) return temperature;
+    
+    // Magnus formula constants for better accuracy
+    const double a = 17.27;
+    const double b = 237.7; // For Celsius
+    
+    final double rh = humidity / 100.0;
+    final double alpha = ((a * temperature) / (b + temperature)) + math.log(rh);
+    final double dewPoint = (b * alpha) / (a - alpha);
+    
+    return dewPoint;
+  }
+
   @override
   Future<({Weather? data, AppError? error})> getCurrentWeather({
     required double latitude,
@@ -53,6 +74,21 @@ class WeatherRepositoryImpl implements WeatherRepository {
         units: units,
       );
 
+      // Fetch UV Index from separate endpoint
+      double uvIndex = 0.0;
+      try {
+        final uvResponse = await _apiClient.getUVIndex(
+          lat: latitude,
+          lon: longitude,
+          apiKey: _apiKey,
+        );
+        uvIndex = uvResponse.value;
+        debugPrint('☀️ UV Index fetched: $uvIndex');
+      } catch (e) {
+        debugPrint('⚠️ Failed to fetch UV index: $e');
+        // Continue with uvIndex = 0.0 if UV endpoint fails
+      }
+
       final weather = Weather(
         temperature: response.main.temp,
         feelsLike: response.main.feelsLike,
@@ -63,8 +99,8 @@ class WeatherRepositoryImpl implements WeatherRepository {
         windDegree: response.wind.deg,
         pressure: response.main.pressure,
         visibility: (response.visibility / 1000).round(), // meters to km
-        dewPoint: 0.0, // Not provided in standard current weather
-        uvIndex: 0, // Not provided in standard current weather
+        dewPoint: _calculateDewPoint(response.main.temp, response.main.humidity),
+        uvIndex: uvIndex,
         sunrise: DateTime.fromMillisecondsSinceEpoch(
           response.sys.sunrise! * 1000,
         ),

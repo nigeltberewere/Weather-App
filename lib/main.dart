@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:weatherly/app.dart';
 import 'package:weatherly/core/services/notification_service.dart';
+import 'package:weatherly/core/services/background_fetch_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,10 @@ void main() async {
   // Initialize notification service
   final notificationService = NotificationService();
   await notificationService.initialize();
+
+  // Initialize background fetch for periodic weather updates
+  await BackgroundFetchService.initializeBackgroundFetch();
+  await BackgroundFetchService.startBackgroundFetch();
 
   runApp(
     const ProviderScope(

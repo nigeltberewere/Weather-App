@@ -143,14 +143,40 @@ class ForecastPage extends ConsumerWidget {
             icon: Icons.cloud_off_outlined,
           );
         }
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: HourlyForecastChart(forecasts: forecast),
+        return CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: HourlyForecastChart(forecasts: forecast),
+              ),
             ),
-            const Divider(color: Colors.white24, height: 1),
-            Expanded(child: HourlyForecastList(forecasts: forecast)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.schedule,
+                      size: 20,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Hourly Details',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverFillRemaining(
+              child: HourlyForecastList(forecasts: forecast),
+            ),
           ],
         );
       },
@@ -181,14 +207,40 @@ class ForecastPage extends ConsumerWidget {
             icon: Icons.cloud_off_outlined,
           );
         }
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: DailyForecastChart(forecasts: forecast),
+        return CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: DailyForecastChart(forecasts: forecast),
+              ),
             ),
-            const Divider(color: Colors.white24, height: 1),
-            Expanded(child: DailyForecastList(forecasts: forecast)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 20,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Daily Details',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverFillRemaining(
+              child: DailyForecastList(forecasts: forecast),
+            ),
           ],
         );
       },
