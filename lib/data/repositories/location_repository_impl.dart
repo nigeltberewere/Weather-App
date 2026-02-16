@@ -62,6 +62,10 @@ class LocationRepositoryImpl implements LocationRepository {
       debugPrint('LocationRepository: Fetching position...');
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 30),
+      ).timeout(
+        const Duration(seconds: 35),
+        onTimeout: () => throw AppError.location('Location fetch timeout'),
       );
       debugPrint(
         'LocationRepository: Position fetched: ${position.latitude}, ${position.longitude}',
@@ -103,6 +107,8 @@ class LocationRepositoryImpl implements LocationRepository {
             lat: position.latitude,
             lon: position.longitude,
             apiKey: _apiKey,
+          ).timeout(
+            const Duration(seconds: 20),
           );
 
           if (results.isNotEmpty) {
@@ -116,6 +122,8 @@ class LocationRepositoryImpl implements LocationRepository {
           }
         } catch (apiError) {
           debugPrint('LocationRepository: API fallback failed: $apiError');
+          // Use a sensible fallback name based on coordinates
+          locationName = 'Location (${position.latitude.toStringAsFixed(2)}, ${position.longitude.toStringAsFixed(2)})';
         }
       }
 

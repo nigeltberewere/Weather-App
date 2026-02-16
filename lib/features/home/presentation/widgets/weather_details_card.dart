@@ -74,9 +74,9 @@ class WeatherDetailsCard extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 1.4,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
+        childAspectRatio: 1.1,
+        crossAxisSpacing: 14,
+        mainAxisSpacing: 14,
       ),
       itemCount: details.length,
       itemBuilder: (context, index) {
@@ -91,7 +91,7 @@ class WeatherDetailsCard extends ConsumerWidget {
                 AppColors.cardBackground.withOpacity(0.1),
               ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: AppColors.cardBorder.withOpacity(0.5),
               width: 1.5,
@@ -104,59 +104,53 @@ class WeatherDetailsCard extends ConsumerWidget {
               ),
             ],
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
             children: [
               // Icon with subtle background glow
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.cardBackground.withOpacity(0.2),
                 ),
                 child: SvgPicture.asset(
                   detail.iconPath,
-                  width: 28,
-                  height: 28,
+                  width: 26,
+                  height: 26,
                   colorFilter: ColorFilter.mode(
                     AppColors.textPrimary.withOpacity(0.9),
                     BlendMode.srcIn,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
               // Label
-              Flexible(
-                child: Text(
-                  detail.label.toUpperCase(),
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
-                  ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+              Text(
+                detail.label.toUpperCase(),
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
                 ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
-              const SizedBox(height: 4),
               // Value
-              Flexible(
-                child: Text(
-                  detail.value,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+              Text(
+                detail.value,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
                 ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ],
           ),

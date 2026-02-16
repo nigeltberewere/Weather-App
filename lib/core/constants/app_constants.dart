@@ -7,9 +7,9 @@ class AppConstants {
   static const Duration weatherCacheDuration = Duration(minutes: 30);
   static const Duration forecastCacheDuration = Duration(hours: 6);
 
-  // Network timeouts
-  static const Duration connectTimeout = Duration(seconds: 30);
-  static const Duration receiveTimeout = Duration(seconds: 30);
+  // Network timeouts (increased for emulator/slow networks)
+  static const Duration connectTimeout = Duration(seconds: 60);
+  static const Duration receiveTimeout = Duration(seconds: 60);
 
   // Map defaults
   static const double defaultMapZoom = 10.0;
