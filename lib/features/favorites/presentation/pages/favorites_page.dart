@@ -120,7 +120,8 @@ class FavoriteWeatherTile extends ConsumerWidget {
             height: 32,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          error: (error, stack) => const Icon(Icons.cloud_off, color: Colors.grey),
+          error: (error, stack) =>
+              const Icon(Icons.cloud_off, color: Colors.grey),
         ),
         title: Text(location.name),
         subtitle: Text(subtitle),
