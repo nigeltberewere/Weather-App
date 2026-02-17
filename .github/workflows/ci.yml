@@ -15,7 +15,6 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        # Removing redundant channel/version tags to fix the "Unable to determine Flutter version" error
         flutter-version: '3.35.3'
         cache: true
     
@@ -23,7 +22,8 @@ jobs:
       run: flutter pub get
     
     - name: Verify formatting
-      run: flutter format --set-exit-if-changed lib/
+      # Fixed: Using 'dart format' instead of 'flutter format'
+      run: dart format --set-exit-if-changed lib/
     
     - name: Analyze project source
       run: flutter analyze
@@ -85,7 +85,7 @@ jobs:
         PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
         KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       run: |
-        # Create temporary keychain
+        # Create temporary keychain for cloud signing
         security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
         security default-keychain -s build.keychain
         security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
@@ -118,7 +118,9 @@ jobs:
         echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
     
     - name: Build iOS IPA
-      run: flutter build ipa --release --no-codesign # Temporarily use no-codesign if certs aren't ready
+      # If you haven't set up the certificates yet, you can add '--no-codesign' here
+      # but it won't be installable on your phone.
+      run: flutter build ipa --release
     
     - name: Upload IPA artifact
       uses: actions/upload-artifact@v4
