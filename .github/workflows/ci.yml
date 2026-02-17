@@ -9,9 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -43,9 +42,8 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     needs: build
-    
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
@@ -73,29 +71,56 @@ jobs:
         name: android-release
         path: build/app/outputs/flutter-apk/app-release.apk
 
-  # build-ios:
-  #   runs-on: macos-latest
-  #   needs: build
-  #   
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   
-  #   - name: Setup Flutter
-  #     uses: subosito/flutter-action@v2
-  #     with:
-  #       flutter-version: '3.35.3'
-  #       channel: 'stable'
-  #   
-  #   - name: Get dependencies
-  #     run: flutter pub get
-  #   
-  #   - name: Run code generation
-  #     run: flutter pub run build_runner build --delete-conflicting-outputs
-  #   
-  #   - name: Create .env file
-  #     run: |
-  #       echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" >> .env
-  #       echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
-  #   
-  #   - name: Build iOS
-  #     run: flutter build ios --release --no-codesign
+  build-ios:
+    runs-on: macos-latest
+    needs: build
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Apple Certificate and Provisioning Profile
+      env:
+        P12_CERTIFICATE: ${{ secrets.P12_CERTIFICATE }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        # Create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+        security set-keychain-settings -t 3600 -u build.keychain
+
+        # Decode and import certificate
+        echo "$P12_CERTIFICATE" | base64 --decode > certificate.p12
+        security import certificate.p12 -k build.keychain -P "$P12_PASSWORD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+
+        # Decode and install provisioning profile
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        echo "$PROVISIONING_PROFILE" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.3'
+        channel: 'stable'
+    
+    - name: Get dependencies
+      run: flutter pub get
+    
+    - name: Run code generation
+      run: flutter pub run build_runner build --delete-conflicting-outputs
+    
+    - name: Create .env file
+      run: |
+        echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" >> .env
+        echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
+    
+    - name: Build iOS IPA
+      run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+    
+    - name: Upload IPA artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ios-release
+        path: build/ios/ipa/*.ipa
