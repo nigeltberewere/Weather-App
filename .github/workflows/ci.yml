@@ -31,7 +31,6 @@ jobs:
       run: flutter pub run build_runner build --delete-conflicting-outputs
     
     - name: Run tests
-      # We use --or-ignore-config to ensure tests run even if local config differs
       run: flutter test --coverage
 
   build-ios:
@@ -56,6 +55,11 @@ jobs:
       run: |
         echo "OPENWEATHER_API_KEY=${{ secrets.OPENWEATHER_API_KEY }}" >> .env
         echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
+
+    - name: Patch Podfile for Static Linkage
+      # This fixes the "transitive dependencies that include statically linked binaries" error
+      run: |
+        sed -i '' "s/use_frameworks!/use_frameworks! :linkage => :static/g" ios/Podfile
     
     - name: Build iOS App (No Codesign)
       run: flutter build ios --release --no-codesign
