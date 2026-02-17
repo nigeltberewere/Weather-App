@@ -15,8 +15,9 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
+        # Removing redundant channel/version tags to fix the "Unable to determine Flutter version" error
         flutter-version: '3.35.3'
-        channel: 'stable'
+        cache: true
     
     - name: Get dependencies
       run: flutter pub get
@@ -49,7 +50,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.35.3'
-        channel: 'stable'
+        cache: true
     
     - name: Get dependencies
       run: flutter pub get
@@ -66,7 +67,7 @@ jobs:
       run: flutter build apk --release
     
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: android-release
         path: build/app/outputs/flutter-apk/app-release.apk
@@ -103,7 +104,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.35.3'
-        channel: 'stable'
+        cache: true
     
     - name: Get dependencies
       run: flutter pub get
@@ -117,10 +118,10 @@ jobs:
         echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
     
     - name: Build iOS IPA
-      run: flutter build ipa --release --export-options-plist=ios/ExportOptions.plist
+      run: flutter build ipa --release --no-codesign # Temporarily use no-codesign if certs aren't ready
     
     - name: Upload IPA artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ios-release
         path: build/ios/ipa/*.ipa
